@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Confirmation</title>
+  </head>
+  <body>
+    <div>
+      <p>
+        Thank you for ordering. <br />
+        Here's your order summary: <br>
+        <ul id="order"></ul>
+        Your order will be ready at: <span id="time"></span>. <br />
+        Your total today will be: <span id="total"></span>
+      </p>
+    </div>
+  </body>
+  <script>
+    const query = location.search.substring(1);
+    const keyValues = query.split(/&/);
+    const time = keyValues[0].split("=")[1];
+    const total = keyValues[1].split("=")[1];
+
+    itemObj = JSON.parse(window.name);
+
+    for (let item in itemObj) {
+      if (itemObj[item] > 0) {
+        let order = document.getElementById("order");
+        order.innerHTML += "<li>"+ item + ": " + itemObj[item] +"</li>";
+      }
+    }
+
+    document.getElementById("time").innerHTML = time;
+    document.getElementById("total").innerHTML = total;
+  </script>
+</html>

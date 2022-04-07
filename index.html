@@ -1,0 +1,322 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Jade Delight</title>
+  </head>
+
+  <style>
+    #street_wrapper {
+      display: none;
+    }
+    #city_wrapper {
+      display: none;
+    }
+    label {
+      display: inline-block;
+      float: left;
+      clear: left;
+      width: 250px;
+      text-align: left;
+    }
+    .form-input {
+      display: inline-block;
+      /* float: left; */
+    }
+    form {
+      /* padding-top: 1rem; */
+    }
+    .pa-small {
+      /* margin: 0.1rem; */
+    }
+  </style>
+
+  <body>
+    <script language="javascript">
+      function MenuItem(name, cost) {
+        this.name = name;
+        this.cost = cost;
+      }
+
+      menuItems = new Array(
+        new MenuItem("Chicken Chop Suey", 4.5),
+        new MenuItem("Sweet and Sour Pork", 6.25),
+        new MenuItem("Shrimp Lo Mein", 5.25),
+        new MenuItem("Moo Shi Chicken", 6.5),
+        new MenuItem("Fried Rice", 2.35)
+      );
+
+      itemObj = {};
+
+      function makeSelect(name, minRange, maxRange) {
+        var t = "";
+        t = "<select name='" + name + "' size='1'>";
+        for (j = minRange; j <= maxRange; j++)
+          t += "<option>" + j + "</option>";
+        t += "</select>";
+        return t;
+      }
+    </script>
+
+    <h1>Jade Delight</h1>
+    <form>
+      <p>
+        <label>First Name: </label
+        ><input type="text" name="fname" id="fname" class="form-input" />
+      </p>
+      <p>
+        <label>Last Name*: </label
+        ><input type="text" name="lname" id="lname" class="form-input" />
+      </p>
+      <p id="street_wrapper">
+        <label>Street: </label
+        ><input type="text" name="street" id="street" class="form-input" />
+      </p>
+      <p id="city_wrapper">
+        <label>City: </label
+        ><input type="text" name="city" id="city" class="form-input" />
+      </p>
+      <p>
+        <label>Phone*: </label
+        ><input
+          type="tel"
+          name="phone"
+          pattern="[0-9a-z]{3}-[0-9a-z]{3}-[0-9a-z]{4}"
+          id="phonenum"
+          class="form-input"
+        />
+      </p>
+      <p class="pa-small">
+        <input
+          type="radio"
+          id="pickup_radio"
+          name="p_or_d"
+          value="pickup"
+          checked="checked"
+          onclick="radioClick()"
+        />Pickup
+        <input
+          type="radio"
+          id="delivery_radio"
+          name="p_or_d"
+          onclick="radioClick()"
+          value="delivery"
+        />Delivery
+      </p>
+      <table border="0" cellpadding="3">
+        <tr>
+          <th>Select Item</th>
+          <th>Item Name</th>
+          <th>Cost Each</th>
+          <th>Total Cost</th>
+        </tr>
+        <script language="javascript">
+          var s = "";
+          for (i = 0; i < menuItems.length; i++) {
+            s += "<tr><td>";
+            s += makeSelect("quan" + i, 0, 10);
+            s += "</td><td>" + menuItems[i].name + "</td>";
+            s += "<td> $ " + menuItems[i].cost.toFixed(2) + "</td>";
+            s += "<td>$<input type='text' name='cost'/></td></tr>";
+          }
+          document.writeln(s);
+
+          for (var i = 0; i < menuItems.length; i++) {
+            document.getElementsByName("quan" + i)[0].onchange = changeItemCost;
+          }
+
+          for (var j = 0; j < menuItems.length; j++) {
+            var first_val = parseFloat("0");
+            document.getElementsByName("cost")[j].value = first_val.toFixed(2);
+          }
+
+          function changeItemCost(event) {
+            var item = event.target;
+            var index_of_item = item.name.slice(-1);
+            var quantity = item.value;
+            var total_item = quantity * menuItems[index_of_item].cost;
+            var rounded_item = total_item.toFixed(2);
+            document.getElementsByName("cost")[index_of_item].value =
+              rounded_item;
+
+            calculate_final_values();
+          }
+        </script>
+      </table>
+      <p>Subtotal: $<input type="text" name="subtotal" id="subtotal" /></p>
+      <p>Mass tax 6.25%: $ <input type="text" name="tax" id="tax" /></p>
+      <p>Total: $ <input type="text" name="total" id="total" /></p>
+
+      <script lang="javascript">
+         var first_zero = parseFloat("0");
+         document.getElementById("subtotal").value = first_zero.toFixed(2);
+         document.getElementById("tax").value = first_zero.toFixed(2);
+         document.getElementById("total").value = first_zero.toFixed(2);
+
+        function calculate_final_values() {
+        	var subtotal = 0;
+        	for (var i = 0; i < menuItems.length; i++) {
+            // itemObj.append({item: menuItems.name, quant: })
+        		subtotal = parseFloat(subtotal);
+        		if (document.getElementsByName("cost")[i].value == "") {
+        			var zero = parseFloat("0");
+        			document.getElementsByName("cost")[i].value = zero.toFixed(2);
+        		}
+        		var added_cost = document.getElementsByName("cost")[i].value;
+        		var float_subtotal = parseFloat(added_cost)
+        		subtotal = subtotal + float_subtotal;
+            if (added_cost>=0) {
+              if (added_cost == 0) {
+                if(menuItems[i]['name'] in itemObj) {
+                  itemObj[menuItems[i]['name']] = added_cost
+                }
+              } else {
+                itemObj[menuItems[i]['name']] = added_cost
+              }
+            }
+        	}
+        	var float_subtotal_final = parseFloat(subtotal);
+        	document.getElementById("subtotal").value = subtotal.toFixed(2);
+
+        	// Calculating tax value
+        	document.getElementById("tax").value = (subtotal * 0.0625).toFixed(2);
+
+        	// Calculating total
+        	document.getElementById("total").value = (subtotal + (subtotal * 0.0625)).toFixed(2);
+
+
+
+        }
+      </script>
+
+      <div id="finalmessage"></div>
+
+      <button type="button" value="Submit Order" onclick="validate()">
+        Submit Order
+      </button>
+
+      <script lang="javascript">
+
+            function radioClick() {
+                const pickup = document.getElementById("pickup_radio");
+                const delivery = document.getElementById("delivery_radio");
+
+                if(pickup.checked) {
+                    document.getElementById('street_wrapper').style.display = 'none';
+                    document.getElementById('city_wrapper').style.display = 'none';
+                } else {
+                    document.getElementById('street_wrapper').style.display = 'block';
+                    document.getElementById('city_wrapper').style.display = 'block';
+                }
+            }
+
+            function validate() {
+            	if (validatePhone() == false || validatelast() == false) {
+            		if (validatePhone() == false) {
+            			alert("Your phone number must be of format XXX-XXX-XXXX.");
+            		}
+            		if (validatelast() == false) {
+            			alert("Please enter your last name.");
+            		}
+            		return;
+            	}
+              if (validateOrder() === false) {
+                alert("Please order something!");
+                return;
+              }
+            	pickupinfo();
+            }
+
+            function validateOrder() {
+            for (let item of Object.keys(itemObj)) {
+                console.log('>>> heya!')
+                return true;
+            }
+            return false;
+        }
+
+            function validatePhone() {
+            	var phoneval = document.getElementById("phonenum").value;
+            	var phoneno = /^\(?([0-9a-z]{3})\)?[-]?([0-9a-z]{3})[-]?([0-9a-z]{4})$/;
+            	var phonenoSmall = /^\(?([0-9a-z]{3})[-]?([0-9a-z]{4})$/;
+            	if (phoneval.match(phoneno) || phoneval.match(phonenoSmall)) {
+            		return true;
+            	} else {
+            		return false;
+            	}
+            }
+
+            function validatelast() {
+            	var lastname = document.getElementById("lname").value;
+            	if (lastname != "") {
+            		return true;
+            	} else {
+            		return false;
+            	}
+            	return;
+            }
+
+            function pickupinfo() {
+              let obj = {}
+            	var pickup = document.getElementById("pickup_radio").checked;
+            	var street = document.getElementById("street").value;
+            	var city = document.getElementById("city").value;
+            	var date = new Date();
+            	if (pickup == true) {
+            			finaltime = add_minutes(15);
+            			document.getElementById("finalmessage").innerHTML =
+            			"Thank you for ordering. Your order will be ready at: "
+            			+ finaltime + ". Your total today will be: $" +
+            			document.getElementById("total").value;
+                        obj = {time: finaltime, total: document.getElementById("total").value};
+                        let win = window.open("./newTab.html?time="+finaltime+"&total="+document.getElementById("total").value, "_blank");
+                        // win.obj = obj;
+                        win.name = JSON.stringify(itemObj);
+            	} else {
+            		if (street == "" || city == "") {
+            			alert("Fill in your street AND your city if you want delivery");
+            			return;
+            		} else {
+            			finaltime = add_minutes(30);
+            			document.getElementById("finalmessage").innerHTML =
+            			"Thank you for ordering. Your order will be ready at: "
+            			+ finaltime + ". Your total today will be: $" +
+            			document.getElementById("total").value;
+                        obj = {time: finaltime, total: document.getElementById("total").value};
+                        let win = window.open("./newTab.html?time="+finaltime+"&total="+document.getElementById("total").value, "_blank");
+                        win.name = JSON.stringify(itemObj);
+            		}
+            	}
+
+            	function add_minutes (minutes_add) {
+            		var date = new Date();
+            		var hours = date.getHours();
+            		var minutes = date.getMinutes();
+            		minutes = minutes + minutes_add;
+            		if (minutes > 59) {
+            			minutes = minutes % 60;
+            			if (hours == 23) {
+            				hours = 0;
+            			} else {
+            				hours += 1;
+            			}
+            		}
+            		var finaltime = "";
+            		if (hours < 10) {
+            			finaltime += "0" + hours + ":";
+            		} else {
+            			finaltime += hours + ":";
+            		}
+            		if (minutes < 10) {
+            			finaltime += "0" + minutes;
+            		} else {
+            			finaltime += minutes;
+            		}
+            		return finaltime;
+            	}
+
+            }
+      </script>
+    </form>
+  </body>
+</html>
